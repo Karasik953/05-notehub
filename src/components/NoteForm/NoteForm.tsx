@@ -1,6 +1,7 @@
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import * as Yup from "yup"
 import { useAddNote } from "../../hooks/useAddNote"
+import type { CreateNoteDto } from "../../types/note"
 import css from "./NoteForm.module.css"
 
 interface NoteFormProps {
@@ -19,16 +20,21 @@ export default function NoteForm({ onClose }: NoteFormProps) {
   const addNoteMutation = useAddNote()
 
   return (
-    <Formik
+    <Formik<CreateNoteDto>
       initialValues={{ title: "", content: "", tag: "Todo" }}
       validationSchema={schema}
       onSubmit={(values, { resetForm }) => {
-        addNoteMutation.mutate(values)
+        const formatted: CreateNoteDto = {
+          title: values.title,
+          content: values.content,
+          tag: values.tag as "Work" | "Personal" | "Meeting" | "Shopping" | "Todo",
+        }
+        addNoteMutation.mutate(formatted)
         resetForm()
         onClose()
       }}
     >
-      {({ isSubmitting }) => (
+      {() => (
         <Form className={css.form}>
           <div className={css.formGroup}>
             <label htmlFor="title">Title</label>
@@ -58,7 +64,7 @@ export default function NoteForm({ onClose }: NoteFormProps) {
             <button type="button" className={css.cancelButton} onClick={onClose}>
               Cancel
             </button>
-            <button type="submit" className={css.submitButton} disabled={isSubmitting}>
+            <button type="submit" className={css.submitButton} disabled={addNoteMutation.isPending}>
               Create note
             </button>
           </div>
