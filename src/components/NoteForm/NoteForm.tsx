@@ -17,21 +17,27 @@ const schema = Yup.object().shape({
 })
 
 export default function NoteForm({ onClose }: NoteFormProps) {
-  const addNoteMutation = useAddNote()
+  const { mutateAsync, isPending } = useAddNote()
 
   return (
     <Formik<CreateNoteDto>
       initialValues={{ title: "", content: "", tag: "Todo" }}
       validationSchema={schema}
-      onSubmit={(values, { resetForm }) => {
-        const formatted: CreateNoteDto = {
+      onSubmit={async (values, { resetForm }) => {
+
+        const payload: CreateNoteDto = {
           title: values.title,
           content: values.content,
           tag: values.tag as "Work" | "Personal" | "Meeting" | "Shopping" | "Todo",
         }
-        addNoteMutation.mutate(formatted)
-        resetForm()
-        onClose()
+
+        try {
+          await mutateAsync(payload)          
+          resetForm()                       
+          onClose()                          
+        } catch {
+          // 
+        }
       }}
     >
       {() => (
@@ -44,7 +50,13 @@ export default function NoteForm({ onClose }: NoteFormProps) {
 
           <div className={css.formGroup}>
             <label htmlFor="content">Content</label>
-            <Field as="textarea" id="content" name="content" rows={8} className={css.textarea} />
+            <Field
+              as="textarea"
+              id="content"
+              name="content"
+              rows={8}
+              className={css.textarea}
+            />
             <ErrorMessage name="content" component="span" className={css.error} />
           </div>
 
@@ -61,11 +73,20 @@ export default function NoteForm({ onClose }: NoteFormProps) {
           </div>
 
           <div className={css.actions}>
-            <button type="button" className={css.cancelButton} onClick={onClose}>
+            <button
+              type="button"
+              className={css.cancelButton}
+              onClick={onClose}
+              disabled={isPending}
+            >
               Cancel
             </button>
-            <button type="submit" className={css.submitButton} disabled={addNoteMutation.isPending}>
-              Create note
+            <button
+              type="submit"
+              className={css.submitButton}
+              disabled={isPending}
+            >
+              {isPending ? "Creating..." : "Create note"}
             </button>
           </div>
         </Form>
