@@ -1,3 +1,4 @@
+// src/components/NoteForm/NoteForm.tsx
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import * as Yup from "yup"
 import { useAddNote } from "../../hooks/useAddNote"
@@ -24,19 +25,12 @@ export default function NoteForm({ onClose }: NoteFormProps) {
       initialValues={{ title: "", content: "", tag: "Todo" }}
       validationSchema={schema}
       onSubmit={async (values, { resetForm }) => {
-
-        const payload: CreateNoteDto = {
-          title: values.title,
-          content: values.content,
-          tag: values.tag as "Work" | "Personal" | "Meeting" | "Shopping" | "Todo",
-        }
-
         try {
-          await mutateAsync(payload)          
-          resetForm()                       
-          onClose()                          
+          await mutateAsync(values)   // <— без зайвих кастів
+          resetForm()
+          onClose()
         } catch {
-          // 
+          // можете показати toast або помилку поруч з формою
         }
       }}
     >

@@ -1,12 +1,10 @@
+
 import axios from "axios"
 import type { Note, CreateNoteDto } from "../types/note"
 
 export interface FetchNotesResponse {
   notes: Note[]
-  page: number
-  perPage: number
   totalPages: number
-  totalNotes: number
 }
 
 const api = axios.create({
