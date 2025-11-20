@@ -2,13 +2,20 @@ import axios from "axios";
 import type { Note } from "../types/note"
 import type { fetchNote } from "../types/note"
 
-//функція для пошуку нотатки
-export const fetchNotes = async (searchPost:string) => {
+//функція для пошуку нотатки + пагінація
+export const fetchNotes = async (
+  searchPost:string,
+  page:number,
+  perPage:number=12,
+
+):Promise<fetchNote> => {
     const res = await axios.get<fetchNote>(
         'https://notehub-public.goit.study/api/notes',
         {
          params:{
-            q:searchPost
+            search:searchPost,
+            page,
+            perPage
          },
          headers: {
                 Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
@@ -16,7 +23,7 @@ export const fetchNotes = async (searchPost:string) => {
         }
     )
     console.log("API response:", res.data);
-    return res.data.notes
+    return res.data
 }
 //функція для створення нотатки
 export const createNote = async (noteData:Omit<Note, "id">) =>{

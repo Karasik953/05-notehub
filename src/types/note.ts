@@ -6,6 +6,10 @@ export interface Note {
     tag:string;
 }
 //інтерфейс що робить інформацію масивом
+//також типізація для пагінації
 export interface fetchNote {
     notes: Note[]
+    page:number
+    perPage:number
+    totalPages:number
 }
