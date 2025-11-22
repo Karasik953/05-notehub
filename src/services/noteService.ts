@@ -37,6 +37,7 @@ export const fetchNotes = async (
 };
 
 // 2. Створити нотатку
+
 export const createNote = async (
   noteData: CreateNotePayload
 ): Promise<Note> => {
@@ -50,7 +51,7 @@ export const createNote = async (
     }
   );
 
-  return res.data; // повертаємо створену Note
+  return res.data;
 };
 
 // 3. Видалити нотатку
