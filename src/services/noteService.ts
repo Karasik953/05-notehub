@@ -1,51 +1,68 @@
 import axios from "axios";
-import type { Note } from "../types/note"
-import type { fetchNote } from "../types/note"
+import type { Note } from "../types/note";
 
-//функція для пошуку нотатки + пагінація
+// Відповідь бекенда для списку нотаток (з пагінацією)
+export interface NotesResponse {
+  notes: Note[];
+  page: number;
+  perPage: number;
+  totalPages: number;
+}
+
+// Дані, які ми відправляємо при створенні нотатки
+// id, createdAt, updatedAt приходять з бекенду
+export type CreateNotePayload = Omit<Note, "id" | "createdAt" | "updatedAt">;
+
+// 1. Отримати список нотаток (пошук + пагінація)
 export const fetchNotes = async (
-  searchPost:string,
-  page:number,
-  perPage:number=12,
+  searchPost: string,
+  page: number,
+  perPage: number = 12
+): Promise<NotesResponse> => {
+  const res = await axios.get<NotesResponse>(
+    "https://notehub-public.goit.study/api/notes",
+    {
+      params: {
+        search: searchPost,
+        page,
+        perPage,
+      },
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
+      },
+    }
+  );
 
-):Promise<fetchNote> => {
-    const res = await axios.get<fetchNote>(
-        'https://notehub-public.goit.study/api/notes',
-        {
-         params:{
-            search:searchPost,
-            page,
-            perPage
-         },
-         headers: {
-                Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
-        }
-        }
-    )
-    console.log("API response:", res.data);
-    return res.data
-}
-//функція для створення нотатки
-export const createNote = async (noteData:Omit<Note, "id">) =>{
-    const res = await axios.post(
-        'https://notehub-public.goit.study/api/notes',
-        noteData,
-        {
-            headers: {
-                Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
-            }
-        }
-    )
-    return res.data
-}
-//функція для видалення нотатки
-export const deleteNote = async (id: number) => {
-  await axios.delete(
+  return res.data;
+};
+
+// 2. Створити нотатку
+export const createNote = async (
+  noteData: CreateNotePayload
+): Promise<Note> => {
+  const res = await axios.post<Note>(
+    "https://notehub-public.goit.study/api/notes",
+    noteData,
+    {
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
+      },
+    }
+  );
+
+  return res.data; // повертаємо створену Note
+};
+
+// 3. Видалити нотатку
+export const deleteNote = async (id: string): Promise<Note> => {
+  const res = await axios.delete<Note>(
     `https://notehub-public.goit.study/api/notes/${id}`,
     {
       headers: {
         Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
-      }
+      },
     }
   );
+
+  return res.data; // повертаємо видалену Note
 };

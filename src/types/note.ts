@@ -1,15 +1,12 @@
 //ітерфейс інформації про нотатку
+// src/types/note.ts
+
 export interface Note {
-    id:number
-    title: string;
-    content:string;
-    tag:string;
+  id: string; // було number
+  title: string;
+  content: string;
+  tag: string;
+  createdAt: string;
+  updatedAt: string;
 }
-//інтерфейс що робить інформацію масивом
-//також типізація для пагінації
-export interface fetchNote {
-    notes: Note[]
-    page:number
-    perPage:number
-    totalPages:number
-}
+
